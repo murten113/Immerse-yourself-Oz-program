@@ -994,7 +994,25 @@ MonoBehaviour:
   correctHeart: 1
   correctLungs: 4
   correctBrain: 7
-  organSprites: []
+  organSprites:
+  - id: 1
+    sprite: {fileID: -5115014299929153556, guid: a64d84cbb5777ab4496e1cec58e21e52, type: 3}
+  - id: 2
+    sprite: {fileID: -5115014299929153556, guid: a64d84cbb5777ab4496e1cec58e21e52, type: 3}
+  - id: 3
+    sprite: {fileID: -5115014299929153556, guid: a64d84cbb5777ab4496e1cec58e21e52, type: 3}
+  - id: 4
+    sprite: {fileID: -1395558672498686439, guid: 8ef0099850bd8e7419be4811e62c4949, type: 3}
+  - id: 5
+    sprite: {fileID: -1395558672498686439, guid: 8ef0099850bd8e7419be4811e62c4949, type: 3}
+  - id: 6
+    sprite: {fileID: -1395558672498686439, guid: 8ef0099850bd8e7419be4811e62c4949, type: 3}
+  - id: 7
+    sprite: {fileID: -893315262278199833, guid: ebd36bb0e207fec4a8dc9c83d9da6d33, type: 3}
+  - id: 8
+    sprite: {fileID: -893315262278199833, guid: ebd36bb0e207fec4a8dc9c83d9da6d33, type: 3}
+  - id: 9
+    sprite: {fileID: -893315262278199833, guid: ebd36bb0e207fec4a8dc9c83d9da6d33, type: 3}
   audioSource: {fileID: 1465092317}
   sfxFailure: {fileID: 0}
   sfxSuccess: {fileID: 0}
