@@ -82,7 +82,7 @@ public class OrganPlacementGame : MonoBehaviour
 
     void Awake()
     {
-        // key → organ map
+        // key to organ map
         keyToOrgan[KeyCode.Alpha1] = OrganId.Heart1;
         keyToOrgan[KeyCode.Alpha2] = OrganId.Heart2;
         keyToOrgan[KeyCode.Alpha3] = OrganId.Heart3;
