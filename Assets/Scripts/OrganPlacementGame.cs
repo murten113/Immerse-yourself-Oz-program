@@ -46,7 +46,9 @@ public class OrganPlacementGame : MonoBehaviour
     public List<OrganSpritePair> organSprites = new List<OrganSpritePair>();
 
     [Header("Audio (optional)")]
-    public AudioSource audioSource;
+    public AudioSource audioSourceHeart;
+    public AudioSource audioSourceLungs;
+    public AudioSource audioSourceBrain;
     public AudioClip sfxFailure;
     public AudioClip sfxSuccess;
 
@@ -171,10 +173,10 @@ public class OrganPlacementGame : MonoBehaviour
 
         if (allOk)
         {
-            Debug.Log("All organs correct → Animal LIVES.");
-            OnRoundSuccess?.Invoke();
-            PlayOneShot(sfxSuccess);
-            if (resetOnSuccess) StartCoroutine(RestartAfterDelay(reactionDuration));
+            // Debug.Log("All organs correct → Animal LIVES.");
+            // OnRoundSuccess?.Invoke();
+            // PlayOneShot(sfxSuccess);
+            // if (resetOnSuccess) StartCoroutine(RestartAfterDelay(reactionDuration));
         }
         else
         {
@@ -234,7 +236,7 @@ public class OrganPlacementGame : MonoBehaviour
         brainSlot.Clear();
     }
 
-    private void PlayOneShot(AudioClip clip)
+    private void PlayOneShot(AudioSource audioSource, AudioClip clip)
     {
         if (audioSource != null && clip != null)
         {
