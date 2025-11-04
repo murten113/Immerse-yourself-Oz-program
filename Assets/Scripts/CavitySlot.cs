@@ -9,9 +9,12 @@ public class CavitySlot : MonoBehaviour
     [Header("Slot Family")]
     public OrganFamily slotFamily;
 
-    [Header("UI Images")]
+    [Header("UI")]
     public Image organImage;
     public Image frameImage;
+
+    [Header("Animation (optional)")]
+    public Animator organAnimator;
 
     [Header("Colors")]
     public Color neutralColor = Color.white;
@@ -34,14 +37,44 @@ public class CavitySlot : MonoBehaviour
         if (frameImage == null) frameImage = img;
     }
 
-    public void SetOrganSprite(Sprite s)
+    public void SetOrganSprite(Sprite sprite)
     {
         if (organImage != null)
         {
-            organImage.sprite = s;
-            organImage.enabled = (s != null);
+            organImage.sprite = sprite;
+            organImage.enabled = (sprite != null);
         }
-        Debug.Log($"{slotFamily} slot now shows {(s ? s.name : "no sprite")}");
+        StopAnimation();
+        Debug.Log($"{slotFamily} slot shows sprite: {(sprite ? sprite.name : "none")}");
+    }
+
+    public void SetOrganAnimation(RuntimeAnimatorController controller)
+    {
+        if (organAnimator == null)
+        {
+            Debug.LogWarning($"{slotFamily} slot has no Animator assigned.");
+            return;
+        }
+
+        if (controller != null)
+        {
+            organAnimator.runtimeAnimatorController = controller;
+            organAnimator.enabled = true;
+            Debug.Log($"{slotFamily} slot playing animation: {controller.name}");
+        }
+        else
+        {
+            StopAnimation();
+        }
+    }
+
+    private void StopAnimation()
+    {
+        if (organAnimator != null)
+        {
+            organAnimator.enabled = false;
+            organAnimator.runtimeAnimatorController = null;
+        }
     }
 
     public void SetState(SlotState s)
@@ -58,6 +91,7 @@ public class CavitySlot : MonoBehaviour
 
     public void Clear()
     {
+        StopAnimation();
         if (organImage != null)
         {
             organImage.sprite = null;
@@ -82,6 +116,5 @@ public class CavitySlot : MonoBehaviour
             baseColor = Color.Lerp(baseColor, selectedTint, selectedTintStrength);
 
         frameImage.color = baseColor;
-        Debug.Log($"{slotFamily} slot color set to {state}");
     }
 }

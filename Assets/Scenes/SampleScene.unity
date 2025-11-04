@@ -213,7 +213,7 @@ RectTransform:
   m_LocalScale: {x: 0, y: 0, z: 0}
   m_ConstrainProportionsScale: 0
   m_Children:
-  - {fileID: 1395860424}
+  - {fileID: 372338558}
   - {fileID: 1471478926}
   - {fileID: 323737161}
   - {fileID: 1486198994}
@@ -236,6 +236,7 @@ GameObject:
   - component: {fileID: 323737163}
   - component: {fileID: 323737162}
   - component: {fileID: 323737164}
+  - component: {fileID: 323737165}
   m_Layer: 5
   m_Name: LungB
   m_TagString: Untagged
@@ -315,6 +316,7 @@ MonoBehaviour:
   slotFamily: 1
   organImage: {fileID: 323737162}
   frameImage: {fileID: 323737162}
+  organAnimator: {fileID: 323737165}
   neutralColor: {r: 1, g: 1, b: 1, a: 1}
   correctColor: {r: 0.5, g: 1, b: 0.5, a: 1}
   wrongPlaceColor: {r: 1, g: 0.7, b: 0.3, a: 1}
@@ -322,6 +324,103 @@ MonoBehaviour:
   showSelection: 1
   selectedTint: {r: 1, g: 0.95, b: 0.6, a: 1}
   selectedTintStrength: 0.3
+--- !u!95 &323737165
+Animator:
+  serializedVersion: 7
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 323737160}
+  m_Enabled: 1
+  m_Avatar: {fileID: 0}
+  m_Controller: {fileID: 0}
+  m_CullingMode: 0
+  m_UpdateMode: 0
+  m_ApplyRootMotion: 0
+  m_LinearVelocityBlending: 0
+  m_StabilizeFeet: 0
+  m_AnimatePhysics: 0
+  m_WarningMessage: 
+  m_HasTransformHierarchy: 1
+  m_AllowConstantClipSamplingOptimization: 1
+  m_KeepAnimatorStateOnDisable: 0
+  m_WriteDefaultValuesOnDisable: 0
+--- !u!1 &372338557
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 372338558}
+  - component: {fileID: 372338560}
+  - component: {fileID: 372338559}
+  m_Layer: 5
+  m_Name: XRay
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!224 &372338558
+RectTransform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 372338557}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 3180142}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_AnchorMin: {x: 0, y: 0}
+  m_AnchorMax: {x: 1, y: 1}
+  m_AnchoredPosition: {x: 0, y: 0}
+  m_SizeDelta: {x: 0, y: 0}
+  m_Pivot: {x: 0.5, y: 0.5}
+--- !u!114 &372338559
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 372338557}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_Material: {fileID: 0}
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_RaycastTarget: 1
+  m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
+  m_Maskable: 1
+  m_OnCullStateChanged:
+    m_PersistentCalls:
+      m_Calls: []
+  m_Sprite: {fileID: 7623471674011572310, guid: 0600bc13fe95b9d4bb553b76bf1668d9, type: 3}
+  m_Type: 0
+  m_PreserveAspect: 0
+  m_FillCenter: 1
+  m_FillMethod: 4
+  m_FillAmount: 1
+  m_FillClockwise: 1
+  m_FillOrigin: 0
+  m_UseSpriteMesh: 0
+  m_PixelsPerUnitMultiplier: 1
+--- !u!222 &372338560
+CanvasRenderer:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 372338557}
+  m_CullTransparentMesh: 1
 --- !u!1 &519420028
 GameObject:
   m_ObjectHideFlags: 0
@@ -543,81 +642,6 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!1 &1395860423
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 1395860424}
-  - component: {fileID: 1395860426}
-  - component: {fileID: 1395860425}
-  m_Layer: 5
-  m_Name: Xray
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!224 &1395860424
-RectTransform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1395860423}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 3180142}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 0, y: 0}
-  m_Pivot: {x: 0.5, y: 0.5}
---- !u!114 &1395860425
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1395860423}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  m_Material: {fileID: 0}
-  m_Color: {r: 0, g: 0, b: 0, a: 1}
-  m_RaycastTarget: 1
-  m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
-  m_Maskable: 1
-  m_OnCullStateChanged:
-    m_PersistentCalls:
-      m_Calls: []
-  m_Sprite: {fileID: 0}
-  m_Type: 0
-  m_PreserveAspect: 0
-  m_FillCenter: 1
-  m_FillMethod: 4
-  m_FillAmount: 1
-  m_FillClockwise: 1
-  m_FillOrigin: 0
-  m_UseSpriteMesh: 0
-  m_PixelsPerUnitMultiplier: 1
---- !u!222 &1395860426
-CanvasRenderer:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1395860423}
-  m_CullTransparentMesh: 1
 --- !u!1 &1465092315
 GameObject:
   m_ObjectHideFlags: 0
@@ -759,6 +783,7 @@ GameObject:
   - component: {fileID: 1471478928}
   - component: {fileID: 1471478927}
   - component: {fileID: 1471478929}
+  - component: {fileID: 1471478930}
   m_Layer: 5
   m_Name: HeartA
   m_TagString: Untagged
@@ -838,6 +863,7 @@ MonoBehaviour:
   slotFamily: 0
   organImage: {fileID: 1471478927}
   frameImage: {fileID: 1471478927}
+  organAnimator: {fileID: 1471478930}
   neutralColor: {r: 1, g: 1, b: 1, a: 1}
   correctColor: {r: 0.5, g: 1, b: 0.5, a: 1}
   wrongPlaceColor: {r: 1, g: 0.7, b: 0.3, a: 1}
@@ -845,6 +871,28 @@ MonoBehaviour:
   showSelection: 1
   selectedTint: {r: 1, g: 0.95, b: 0.6, a: 1}
   selectedTintStrength: 0.3
+--- !u!95 &1471478930
+Animator:
+  serializedVersion: 7
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1471478925}
+  m_Enabled: 1
+  m_Avatar: {fileID: 0}
+  m_Controller: {fileID: 0}
+  m_CullingMode: 0
+  m_UpdateMode: 0
+  m_ApplyRootMotion: 0
+  m_LinearVelocityBlending: 0
+  m_StabilizeFeet: 0
+  m_AnimatePhysics: 0
+  m_WarningMessage: 
+  m_HasTransformHierarchy: 1
+  m_AllowConstantClipSamplingOptimization: 1
+  m_KeepAnimatorStateOnDisable: 0
+  m_WriteDefaultValuesOnDisable: 0
 --- !u!1 &1486198993
 GameObject:
   m_ObjectHideFlags: 0
@@ -857,6 +905,7 @@ GameObject:
   - component: {fileID: 1486198996}
   - component: {fileID: 1486198995}
   - component: {fileID: 1486198997}
+  - component: {fileID: 1486198998}
   m_Layer: 5
   m_Name: BrainC
   m_TagString: Untagged
@@ -936,6 +985,7 @@ MonoBehaviour:
   slotFamily: 2
   organImage: {fileID: 1486198995}
   frameImage: {fileID: 1486198995}
+  organAnimator: {fileID: 1486198998}
   neutralColor: {r: 1, g: 1, b: 1, a: 1}
   correctColor: {r: 0.5, g: 1, b: 0.5, a: 1}
   wrongPlaceColor: {r: 1, g: 0.7, b: 0.3, a: 1}
@@ -943,6 +993,28 @@ MonoBehaviour:
   showSelection: 1
   selectedTint: {r: 1, g: 0.95, b: 0.6, a: 1}
   selectedTintStrength: 0.3
+--- !u!95 &1486198998
+Animator:
+  serializedVersion: 7
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1486198993}
+  m_Enabled: 1
+  m_Avatar: {fileID: 0}
+  m_Controller: {fileID: 0}
+  m_CullingMode: 0
+  m_UpdateMode: 0
+  m_ApplyRootMotion: 0
+  m_LinearVelocityBlending: 0
+  m_StabilizeFeet: 0
+  m_AnimatePhysics: 0
+  m_WarningMessage: 
+  m_HasTransformHierarchy: 1
+  m_AllowConstantClipSamplingOptimization: 1
+  m_KeepAnimatorStateOnDisable: 0
+  m_WriteDefaultValuesOnDisable: 0
 --- !u!1 &1617367902
 GameObject:
   m_ObjectHideFlags: 0
@@ -994,25 +1066,34 @@ MonoBehaviour:
   correctHeart: 1
   correctLungs: 4
   correctBrain: 7
-  organSprites:
+  organVisuals:
   - id: 1
     sprite: {fileID: -5115014299929153556, guid: a64d84cbb5777ab4496e1cec58e21e52, type: 3}
+    animation: {fileID: 9100000, guid: 5b429f8082b835a45a31169d2d775888, type: 2}
   - id: 2
     sprite: {fileID: -5115014299929153556, guid: a64d84cbb5777ab4496e1cec58e21e52, type: 3}
+    animation: {fileID: 9100000, guid: 5b429f8082b835a45a31169d2d775888, type: 2}
   - id: 3
     sprite: {fileID: -5115014299929153556, guid: a64d84cbb5777ab4496e1cec58e21e52, type: 3}
+    animation: {fileID: 9100000, guid: 5b429f8082b835a45a31169d2d775888, type: 2}
   - id: 4
     sprite: {fileID: -1395558672498686439, guid: 8ef0099850bd8e7419be4811e62c4949, type: 3}
+    animation: {fileID: 9100000, guid: 2a460adf90007cf4bbaa205c7519b243, type: 2}
   - id: 5
     sprite: {fileID: -1395558672498686439, guid: 8ef0099850bd8e7419be4811e62c4949, type: 3}
+    animation: {fileID: 9100000, guid: 2a460adf90007cf4bbaa205c7519b243, type: 2}
   - id: 6
     sprite: {fileID: -1395558672498686439, guid: 8ef0099850bd8e7419be4811e62c4949, type: 3}
+    animation: {fileID: 9100000, guid: 2a460adf90007cf4bbaa205c7519b243, type: 2}
   - id: 7
     sprite: {fileID: -893315262278199833, guid: ebd36bb0e207fec4a8dc9c83d9da6d33, type: 3}
+    animation: {fileID: 9100000, guid: 3b2830c730ff8d6408d80d6b3e22d54b, type: 2}
   - id: 8
     sprite: {fileID: -893315262278199833, guid: ebd36bb0e207fec4a8dc9c83d9da6d33, type: 3}
+    animation: {fileID: 9100000, guid: 3b2830c730ff8d6408d80d6b3e22d54b, type: 2}
   - id: 9
     sprite: {fileID: -893315262278199833, guid: ebd36bb0e207fec4a8dc9c83d9da6d33, type: 3}
+    animation: {fileID: 9100000, guid: 3b2830c730ff8d6408d80d6b3e22d54b, type: 2}
   audioSource: {fileID: 1465092317}
   sfxFailure: {fileID: 0}
   sfxSuccess: {fileID: 0}
