@@ -2,3 +2,5 @@ om te spelen is ABC selecteren van orgaan slot A = bovenste B = middel C = onder
 spatie is "hendel" kan nog veranderd om controller press te zijn ofzo.
 
 moet nog wat assets in geplopt zoals afbeeldingen en geluiden
+
+je kan via de inspector specifieke geluiden afspelen voor specifieke volgordes etc
