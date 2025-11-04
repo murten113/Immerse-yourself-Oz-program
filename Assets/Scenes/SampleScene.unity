@@ -167,7 +167,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0cd44c1031e13a943bb63640046fad76, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_UiScaleMode: 0
+  m_UiScaleMode: 1
   m_ReferencePixelsPerUnit: 100
   m_ScaleFactor: 1
   m_ReferenceResolution: {x: 800, y: 600}
@@ -252,15 +252,15 @@ RectTransform:
   m_GameObject: {fileID: 323737160}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
+  m_LocalScale: {x: 0.94, y: 0.94, z: 0.94}
+  m_ConstrainProportionsScale: 1
   m_Children: []
   m_Father: {fileID: 3180142}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 490, y: 0}
-  m_SizeDelta: {x: 250, y: 250}
+  m_AnchoredPosition: {x: 285, y: 0}
+  m_SizeDelta: {x: 150, y: 150}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &323737162
 MonoBehaviour:
@@ -312,9 +312,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 798ae2a7f1b5c5f4a99d49183e60025d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  slotFamily: 0
-  organImage: {fileID: 0}
-  frameImage: {fileID: 0}
+  slotFamily: 1
+  organImage: {fileID: 323737162}
+  frameImage: {fileID: 323737162}
   neutralColor: {r: 1, g: 1, b: 1, a: 1}
   correctColor: {r: 0.5, g: 1, b: 0.5, a: 1}
   wrongPlaceColor: {r: 1, g: 0.7, b: 0.3, a: 1}
@@ -775,15 +775,15 @@ RectTransform:
   m_GameObject: {fileID: 1471478925}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
+  m_LocalScale: {x: 0.94, y: 0.94, z: 0.94}
+  m_ConstrainProportionsScale: 1
   m_Children: []
   m_Father: {fileID: 3180142}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 350, y: 295}
-  m_SizeDelta: {x: 250, y: 250}
+  m_AnchoredPosition: {x: 126, y: 140}
+  m_SizeDelta: {x: 150, y: 150}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1471478927
 MonoBehaviour:
@@ -836,8 +836,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   slotFamily: 0
-  organImage: {fileID: 0}
-  frameImage: {fileID: 0}
+  organImage: {fileID: 1471478927}
+  frameImage: {fileID: 1471478927}
   neutralColor: {r: 1, g: 1, b: 1, a: 1}
   correctColor: {r: 0.5, g: 1, b: 0.5, a: 1}
   wrongPlaceColor: {r: 1, g: 0.7, b: 0.3, a: 1}
@@ -873,15 +873,15 @@ RectTransform:
   m_GameObject: {fileID: 1486198993}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
+  m_LocalScale: {x: 0.94, y: 0.94, z: 0.94}
+  m_ConstrainProportionsScale: 1
   m_Children: []
   m_Father: {fileID: 3180142}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 350, y: -295}
-  m_SizeDelta: {x: 250, y: 250}
+  m_AnchoredPosition: {x: 126.000015, y: -140}
+  m_SizeDelta: {x: 150, y: 150}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1486198995
 MonoBehaviour:
@@ -933,9 +933,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 798ae2a7f1b5c5f4a99d49183e60025d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  slotFamily: 0
-  organImage: {fileID: 0}
-  frameImage: {fileID: 0}
+  slotFamily: 2
+  organImage: {fileID: 1486198995}
+  frameImage: {fileID: 1486198995}
   neutralColor: {r: 1, g: 1, b: 1, a: 1}
   correctColor: {r: 0.5, g: 1, b: 0.5, a: 1}
   wrongPlaceColor: {r: 1, g: 0.7, b: 0.3, a: 1}
