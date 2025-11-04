@@ -235,8 +235,9 @@ GameObject:
   - component: {fileID: 323737161}
   - component: {fileID: 323737163}
   - component: {fileID: 323737162}
+  - component: {fileID: 323737164}
   m_Layer: 5
-  m_Name: SlotB
+  m_Name: LungB
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -299,6 +300,23 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 323737160}
   m_CullTransparentMesh: 1
+--- !u!114 &323737164
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 323737160}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 798ae2a7f1b5c5f4a99d49183e60025d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  organImage: {fileID: 323737162}
+  frameImage: {fileID: 323737162}
+  neutralColor: {r: 1, g: 1, b: 1, a: 1}
+  successColor: {r: 0.5, g: 1, b: 0.5, a: 1}
+  failureColor: {r: 1, g: 0.5, b: 0.5, a: 1}
 --- !u!1 &519420028
 GameObject:
   m_ObjectHideFlags: 0
@@ -735,8 +753,9 @@ GameObject:
   - component: {fileID: 1471478926}
   - component: {fileID: 1471478928}
   - component: {fileID: 1471478927}
+  - component: {fileID: 1471478929}
   m_Layer: 5
-  m_Name: SlotA
+  m_Name: HeartA
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -799,6 +818,23 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1471478925}
   m_CullTransparentMesh: 1
+--- !u!114 &1471478929
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1471478925}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 798ae2a7f1b5c5f4a99d49183e60025d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  organImage: {fileID: 1471478927}
+  frameImage: {fileID: 1471478927}
+  neutralColor: {r: 1, g: 1, b: 1, a: 1}
+  successColor: {r: 0.5, g: 1, b: 0.5, a: 1}
+  failureColor: {r: 1, g: 0.5, b: 0.5, a: 1}
 --- !u!1 &1486198993
 GameObject:
   m_ObjectHideFlags: 0
@@ -810,8 +846,9 @@ GameObject:
   - component: {fileID: 1486198994}
   - component: {fileID: 1486198996}
   - component: {fileID: 1486198995}
+  - component: {fileID: 1486198997}
   m_Layer: 5
-  m_Name: SlotC
+  m_Name: BrainC
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -874,6 +911,23 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1486198993}
   m_CullTransparentMesh: 1
+--- !u!114 &1486198997
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1486198993}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 798ae2a7f1b5c5f4a99d49183e60025d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  organImage: {fileID: 1486198995}
+  frameImage: {fileID: 1486198995}
+  neutralColor: {r: 1, g: 1, b: 1, a: 1}
+  successColor: {r: 0.5, g: 1, b: 0.5, a: 1}
+  failureColor: {r: 1, g: 0.5, b: 0.5, a: 1}
 --- !u!1 &1617367902
 GameObject:
   m_ObjectHideFlags: 0
@@ -883,6 +937,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1617367903}
+  - component: {fileID: 1617367904}
   m_Layer: 0
   m_Name: GameManager
   m_TagString: Untagged
@@ -906,6 +961,43 @@ Transform:
   - {fileID: 1465092316}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1617367904
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1617367902}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b35c7dfe62fc2d448a2fa1594004cbf2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  heartSlot: {fileID: 1471478929}
+  lungsSlot: {fileID: 323737164}
+  brainSlot: {fileID: 1486198997}
+  correctHeart: 1
+  correctLungs: 4
+  correctBrain: 7
+  organSprites: []
+  audioSource: {fileID: 1465092317}
+  sfxFailure: {fileID: 0}
+  sfxSuccess: {fileID: 0}
+  reactionDuration: 1.5
+  resetOnFailure: 1
+  resetOnSuccess: 0
+  OnLeverPulled:
+    m_PersistentCalls:
+      m_Calls: []
+  OnRoundSuccess:
+    m_PersistentCalls:
+      m_Calls: []
+  OnRoundFailure:
+    m_PersistentCalls:
+      m_Calls: []
+  OnRoundClearedForRestart:
+    m_PersistentCalls:
+      m_Calls: []
 --- !u!1 &2011593647
 GameObject:
   m_ObjectHideFlags: 0

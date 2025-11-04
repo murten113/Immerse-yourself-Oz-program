@@ -1,26 +1,16 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Events;
 using UnityEngine.UI;
 
-public enum OrganFamily
-{
-    Heart,
-    Lungs,
-    Brain
-}
+public enum OrganFamily { Heart, Lungs, Brain }
 
 public enum OrganId
 {
-    Heart1 = 1,
-    Heart2 = 2,
-    Heart3 = 3,
-    Lungs1 = 4,
-    Lungs2 = 5,
-    Lungs3 = 6,
-    Brain1 = 7,
-    Brain2 = 8,
-    Brain3 = 9
+    Heart1 = 1, Heart2 = 2, Heart3 = 3,
+    Lungs1 = 4, Lungs2 = 5, Lungs3 = 6,
+    Brain1 = 7, Brain2 = 8, Brain3 = 9
 }
 
 public static class OrganHelpers
@@ -31,14 +21,11 @@ public static class OrganHelpers
         {
             case OrganId.Heart1:
             case OrganId.Heart2:
-            case OrganId.Heart3:
-                return OrganFamily.Heart;
+            case OrganId.Heart3: return OrganFamily.Heart;
             case OrganId.Lungs1:
             case OrganId.Lungs2:
-            case OrganId.Lungs3:
-                return OrganFamily.Lungs;
-            default:
-                return OrganFamily.Brain;
+            case OrganId.Lungs3: return OrganFamily.Lungs;
+            default: return OrganFamily.Brain;
         }
     }
 
@@ -46,14 +33,14 @@ public static class OrganHelpers
     {
         switch (id)
         {
-            case OrganId.Heart1: return 1;
-            case OrganId.Heart2: return 2;
-            case OrganId.Heart3: return 3;
-            case OrganId.Lungs1: return 1;
-            case OrganId.Lungs2: return 2;
-            case OrganId.Lungs3: return 3;
+            case OrganId.Heart1:
+            case OrganId.Lungs1:
             case OrganId.Brain1: return 1;
+            case OrganId.Heart2:
+            case OrganId.Lungs2:
             case OrganId.Brain2: return 2;
+            case OrganId.Heart3:
+            case OrganId.Lungs3:
             case OrganId.Brain3: return 3;
             default: return 0;
         }
@@ -62,32 +49,61 @@ public static class OrganHelpers
 
 public class OrganPlacementGame : MonoBehaviour
 {
-    [Header("UI Slots")]
-    public CavitySlot slotA;
-    public CavitySlot slotB;
-    public CavitySlot slotC;
+    [Header("Slots (fixed family per slot)")]
+    public CavitySlot heartSlot; // represents the Heart cavity
+    public CavitySlot lungsSlot; // represents the Lungs cavity
+    public CavitySlot brainSlot; // represents the Brain cavity
 
-    [Header("Correct Targets (exact organ id per slot)")]
-    public OrganId correctForA = OrganId.Heart1;
-    public OrganId correctForB = OrganId.Lungs1;
-    public OrganId correctForC = OrganId.Brain1;
+    [Header("Exact correct target per slot (variant matters)")]
+    public OrganId correctHeart = OrganId.Heart1;
+    public OrganId correctLungs = OrganId.Lungs1;
+    public OrganId correctBrain = OrganId.Brain1;
 
     [Header("Sprites (map each OrganId to a sprite)")]
     public List<OrganSpritePair> organSprites = new List<OrganSpritePair>();
 
-    [Header("Audio")]
+    [Header("Audio (optional)")]
     public AudioSource audioSource;
-    public AudioClip sfxWrong;              // wrong family
-    public AudioClip sfxRightWrongPlace;    // right family, wrong variant
-    public AudioClip sfxCorrect;            // right family, right variant
+    public AudioClip sfxFailure;
+    public AudioClip sfxSuccess;
 
+    [Header("Round flow")]
+    public float reactionDuration = 1.5f;
+    public bool resetOnFailure = true;
+    public bool resetOnSuccess = false;
+
+    [Header("Events to hook custom audio/FX")]
+    public UnityEvent OnLeverPulled;
+    public UnityEvent OnRoundSuccess;
+    public UnityEvent OnRoundFailure;
+    public UnityEvent OnRoundClearedForRestart;
+
+    [Header("Placement Controls")]
+    [Tooltip("Manual placement: select cavity with A/B/C, then press 1–9 to place there.")]
+    public bool manualPlacement = true;
+
+    // Input maps
     private readonly Dictionary<KeyCode, OrganId> keyToOrgan = new Dictionary<KeyCode, OrganId>();
     private readonly Dictionary<OrganId, Sprite> idToSprite = new Dictionary<OrganId, Sprite>();
+
+    // What’s currently inside each visible slot (could be wrong place)
+    private OrganId? inHeartSlot;
+    private OrganId? inLungsSlot;
+    private OrganId? inBrainSlot;
+
+    // Selection when manual placement is enabled
     private CavitySlot selectedSlot;
+
+    [Serializable]
+    public class OrganSpritePair
+    {
+        public OrganId id;
+        public Sprite sprite;
+    }
 
     void Awake()
     {
-        // 1�9 mapping
+        // 1–9 → organs
         keyToOrgan[KeyCode.Alpha1] = OrganId.Heart1;
         keyToOrgan[KeyCode.Alpha2] = OrganId.Heart2;
         keyToOrgan[KeyCode.Alpha3] = OrganId.Heart3;
@@ -98,190 +114,164 @@ public class OrganPlacementGame : MonoBehaviour
         keyToOrgan[KeyCode.Alpha8] = OrganId.Brain2;
         keyToOrgan[KeyCode.Alpha9] = OrganId.Brain3;
 
+        // build sprite lookup
         idToSprite.Clear();
-        foreach (var pair in organSprites)
-        {
-            if (!idToSprite.ContainsKey(pair.id) && pair.sprite != null)
-                idToSprite.Add(pair.id, pair.sprite);
-        }
+        foreach (var p in organSprites)
+            if (p != null && p.sprite != null && !idToSprite.ContainsKey(p.id))
+                idToSprite.Add(p.id, p.sprite);
 
-        SelectSlot(slotA);
+        // start neutral
+        ClearAll();
+        selectedSlot = heartSlot; // default selection
+        HighlightSelection();
     }
 
     void Update()
     {
-        if (Input.GetKeyDown(KeyCode.A)) SelectSlot(slotA);
-        if (Input.GetKeyDown(KeyCode.B)) SelectSlot(slotB);
-        if (Input.GetKeyDown(KeyCode.C)) SelectSlot(slotC);
-
-        foreach (var kvp in keyToOrgan)
+        // Select cavity when manual placement is on
+        if (manualPlacement)
         {
-            if (Input.GetKeyDown(kvp.Key))
+            if (Input.GetKeyDown(KeyCode.A)) { selectedSlot = heartSlot; HighlightSelection(); }
+            if (Input.GetKeyDown(KeyCode.B)) { selectedSlot = lungsSlot; HighlightSelection(); }
+            if (Input.GetKeyDown(KeyCode.C)) { selectedSlot = brainSlot; HighlightSelection(); }
+        }
+
+        // Place organ
+        foreach (var kv in keyToOrgan)
+        {
+            if (Input.GetKeyDown(kv.Key))
             {
-                TryPlaceOrgan(kvp.Value);
+                PlaceOrgan(kv.Value);
                 break;
             }
         }
+
+        // Lever
+        if (Input.GetKeyDown(KeyCode.Space))
+            PullLever();
     }
 
-    private void SelectSlot(CavitySlot slot)
+    public void PullLever()
     {
-        if (slot == null) return;
-        selectedSlot = slot;
-        slotA.SetSelected(slot == slotA);
-        slotB.SetSelected(slot == slotB);
-        slotC.SetSelected(slot == slotC);
+        OnLeverPulled?.Invoke();
+        EvaluateAndReact();
     }
 
-    private void TryPlaceOrgan(OrganId chosen)
+    private void PlaceOrgan(OrganId organ)
     {
-        if (selectedSlot == null) return;
+        var spr = idToSprite.TryGetValue(organ, out var s) ? s : null;
 
-        OrganId target = GetTargetForSlot(selectedSlot);
-
-        bool familyMatch = OrganHelpers.GetFamily(chosen) == OrganHelpers.GetFamily(target);
-        bool variantMatch = chosen == target;
-
-        // Show the placement first
-        Sprite spr = idToSprite.TryGetValue(chosen, out var s) ? s : null;
-        selectedSlot.SetOrgan(chosen, spr);
-
-        if (!familyMatch)
+        if (manualPlacement && selectedSlot != null)
         {
-            // Wrong family -> doesn't work, clear
-            selectedSlot.BlinkWrongThenClear();
-            Play(sfxWrong);
-            return;
+            // Put the organ where the player selected (even if it's the "wrong" family)
+            if (selectedSlot == heartSlot) inHeartSlot = organ;
+            else if (selectedSlot == lungsSlot) inLungsSlot = organ;
+            else if (selectedSlot == brainSlot) inBrainSlot = organ;
+
+            selectedSlot.SetOrganSprite(spr);
+        }
+        else
+        {
+            // Auto-snap by family (optional mode)
+            var fam = OrganHelpers.GetFamily(organ);
+            if (fam == OrganFamily.Heart) { inHeartSlot = organ; heartSlot.SetOrganSprite(spr); }
+            else if (fam == OrganFamily.Lungs) { inLungsSlot = organ; lungsSlot.SetOrganSprite(spr); }
+            else { inBrainSlot = organ; brainSlot.SetOrganSprite(spr); }
         }
 
-        if (familyMatch && !variantMatch)
+        // Reset colors to neutral whenever a change is made
+        heartSlot.SetState(SlotState.Neutral);
+        lungsSlot.SetState(SlotState.Neutral);
+        brainSlot.SetState(SlotState.Neutral);
+
+        // Keep a subtle highlight on the selected slot (optional visual)
+        HighlightSelection();
+    }
+
+    private void EvaluateAndReact()
+    {
+        // For each slot:
+        // Green  = chosen family matches this slot AND variant matches the slot's correct OrganId.
+        // Orange = chosen family is one of the correct families but placed in the wrong slot (family mismatch with this slot).
+        // Red    = empty OR wrong variant in correct slot OR any other mismatch.
+
+        bool heartOk = EvaluateSlot(inHeartSlot, OrganFamily.Heart, correctHeart, heartSlot);
+        bool lungsOk = EvaluateSlot(inLungsSlot, OrganFamily.Lungs, correctLungs, lungsSlot);
+        bool brainOk = EvaluateSlot(inBrainSlot, OrganFamily.Brain, correctBrain, brainSlot);
+
+        bool allOk = heartOk && lungsOk && brainOk;
+
+        if (allOk)
         {
-            // Right family, wrong variant -> special sound, keep visible
-            selectedSlot.PulseWarning();
-            Play(sfxRightWrongPlace);
-            return;
+            OnRoundSuccess?.Invoke();
+            PlayOneShot(sfxSuccess);
+            if (resetOnSuccess) StartCoroutine(RestartAfterDelay(reactionDuration));
         }
-
-        // Exact match
-        selectedSlot.LockIn();
-        Play(sfxCorrect);
-
-        if (AllCorrectAndLocked())
+        else
         {
-            Debug.Log("All organs placed correctly.");
-        }
-    }
-
-    private OrganId GetTargetForSlot(CavitySlot slot)
-    {
-        if (slot == slotA) return correctForA;
-        if (slot == slotB) return correctForB;
-        return correctForC;
-    }
-
-    private bool AllCorrectAndLocked()
-    {
-        return slotA.IsLockedAndCorrect(correctForA)
-            && slotB.IsLockedAndCorrect(correctForB)
-            && slotC.IsLockedAndCorrect(correctForC);
-    }
-
-    private void Play(AudioClip clip)
-    {
-        if (audioSource != null && clip != null)
-            audioSource.PlayOneShot(clip);
-    }
-
-    [Serializable]
-    public class OrganSpritePair
-    {
-        public OrganId id;
-        public Sprite sprite;
-    }
-}
-
-[RequireComponent(typeof(Image))]
-public class CavitySlot : MonoBehaviour
-{
-    [Header("UI")]
-    public Image organImage;   // sprite shown for placed organ
-    public Image borderImage;  // border highlight
-
-    [Header("Colors")]
-    public Color normalBorder = Color.white;
-    public Color selectedBorder = new Color(1f, 0.85f, 0.3f);
-    public Color lockedBorder = new Color(0.5f, 1f, 0.5f);
-
-    [Header("Feedback")]
-    public float blinkDuration = 0.25f;
-
-    private OrganId? currentOrgan;
-    private bool locked;
-
-    void Reset()
-    {
-        var img = GetComponent<Image>();
-        if (organImage == null) organImage = img;
-        if (borderImage == null) borderImage = img;
-    }
-
-    public void SetSelected(bool isSelected)
-    {
-        if (borderImage != null && !locked)
-            borderImage.color = isSelected ? selectedBorder : normalBorder;
-    }
-
-    public void SetOrgan(OrganId organ, Sprite sprite)
-    {
-        currentOrgan = organ;
-        if (organImage != null)
-        {
-            organImage.sprite = sprite;
-            organImage.enabled = (sprite != null);
+            OnRoundFailure?.Invoke();
+            PlayOneShot(sfxFailure);
+            if (resetOnFailure) StartCoroutine(RestartAfterDelay(reactionDuration));
         }
     }
 
-    public void BlinkWrongThenClear()
+    private bool EvaluateSlot(OrganId? placed, OrganFamily thisSlotFamily, OrganId correctIdForThisSlot, CavitySlot slot)
     {
-        if (!locked) StartCoroutine(BlinkAndClearRoutine());
-    }
-
-    public void PulseWarning()
-    {
-        if (!locked) StartCoroutine(PulseRoutine());
-    }
-
-    public void LockIn()
-    {
-        locked = true;
-        if (borderImage != null) borderImage.color = lockedBorder;
-    }
-
-    public bool IsLockedAndCorrect(OrganId correctOrgan)
-    {
-        return locked && currentOrgan.HasValue && currentOrgan.Value.Equals(correctOrgan);
-    }
-
-    private System.Collections.IEnumerator BlinkAndClearRoutine()
-    {
-        Color pre = borderImage != null ? borderImage.color : Color.white;
-        if (borderImage != null) borderImage.color = Color.red;
-        yield return new WaitForSeconds(blinkDuration);
-        if (borderImage != null) borderImage.color = pre;
-
-        currentOrgan = null;
-        if (organImage != null)
+        if (!placed.HasValue)
         {
-            organImage.sprite = null;
-            organImage.enabled = false;
+            slot.SetState(SlotState.Wrong); // empty = red
+            return false;
+        }
+
+        var placedFam = OrganHelpers.GetFamily(placed.Value);
+        var correctFam = OrganHelpers.GetFamily(correctIdForThisSlot); // equals thisSlotFamily by design
+
+        if (placedFam != correctFam)
+        {
+            // Correct organ family exists, but placed in the wrong cavity => orange
+            slot.SetState(SlotState.WrongPlace);
+            return false;
+        }
+
+        // Family matches this slot; now check variant
+        if (placed.Value == correctIdForThisSlot)
+        {
+            slot.SetState(SlotState.Correct); // green
+            return true;
+        }
+        else
+        {
+            // Right slot (family), wrong variant
+            slot.SetState(SlotState.Wrong); // red
+            return false;
         }
     }
 
-    private System.Collections.IEnumerator PulseRoutine()
+    private System.Collections.IEnumerator RestartAfterDelay(float seconds)
     {
-        Color pre = borderImage != null ? borderImage.color : Color.white;
-        if (borderImage != null) borderImage.color = new Color(1f, 0.6f, 0.3f);
-        yield return new WaitForSeconds(blinkDuration);
-        if (borderImage != null) borderImage.color = pre;
+        if (seconds > 0f) yield return new WaitForSeconds(seconds);
+        ClearAll();
+        OnRoundClearedForRestart?.Invoke();
+    }
+
+    private void ClearAll()
+    {
+        inHeartSlot = inLungsSlot = inBrainSlot = null;
+        heartSlot.Clear();
+        lungsSlot.Clear();
+        brainSlot.Clear();
+    }
+
+    private void PlayOneShot(AudioClip clip)
+    {
+        if (audioSource != null && clip != null) audioSource.PlayOneShot(clip);
+    }
+
+    private void HighlightSelection()
+    {
+        if (!manualPlacement) return;
+        heartSlot.SetSelectedVisual(selectedSlot == heartSlot);
+        lungsSlot.SetSelectedVisual(selectedSlot == lungsSlot);
+        brainSlot.SetSelectedVisual(selectedSlot == brainSlot);
     }
 }
