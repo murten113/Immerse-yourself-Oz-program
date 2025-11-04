@@ -312,11 +312,16 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 798ae2a7f1b5c5f4a99d49183e60025d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  organImage: {fileID: 323737162}
-  frameImage: {fileID: 323737162}
+  slotFamily: 0
+  organImage: {fileID: 0}
+  frameImage: {fileID: 0}
   neutralColor: {r: 1, g: 1, b: 1, a: 1}
-  successColor: {r: 0.5, g: 1, b: 0.5, a: 1}
-  failureColor: {r: 1, g: 0.5, b: 0.5, a: 1}
+  correctColor: {r: 0.5, g: 1, b: 0.5, a: 1}
+  wrongPlaceColor: {r: 1, g: 0.7, b: 0.3, a: 1}
+  wrongColor: {r: 1, g: 0.5, b: 0.5, a: 1}
+  showSelection: 1
+  selectedTint: {r: 1, g: 0.95, b: 0.6, a: 1}
+  selectedTintStrength: 0.3
 --- !u!1 &519420028
 GameObject:
   m_ObjectHideFlags: 0
@@ -830,11 +835,16 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 798ae2a7f1b5c5f4a99d49183e60025d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  organImage: {fileID: 1471478927}
-  frameImage: {fileID: 1471478927}
+  slotFamily: 0
+  organImage: {fileID: 0}
+  frameImage: {fileID: 0}
   neutralColor: {r: 1, g: 1, b: 1, a: 1}
-  successColor: {r: 0.5, g: 1, b: 0.5, a: 1}
-  failureColor: {r: 1, g: 0.5, b: 0.5, a: 1}
+  correctColor: {r: 0.5, g: 1, b: 0.5, a: 1}
+  wrongPlaceColor: {r: 1, g: 0.7, b: 0.3, a: 1}
+  wrongColor: {r: 1, g: 0.5, b: 0.5, a: 1}
+  showSelection: 1
+  selectedTint: {r: 1, g: 0.95, b: 0.6, a: 1}
+  selectedTintStrength: 0.3
 --- !u!1 &1486198993
 GameObject:
   m_ObjectHideFlags: 0
@@ -923,11 +933,16 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 798ae2a7f1b5c5f4a99d49183e60025d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  organImage: {fileID: 1486198995}
-  frameImage: {fileID: 1486198995}
+  slotFamily: 0
+  organImage: {fileID: 0}
+  frameImage: {fileID: 0}
   neutralColor: {r: 1, g: 1, b: 1, a: 1}
-  successColor: {r: 0.5, g: 1, b: 0.5, a: 1}
-  failureColor: {r: 1, g: 0.5, b: 0.5, a: 1}
+  correctColor: {r: 0.5, g: 1, b: 0.5, a: 1}
+  wrongPlaceColor: {r: 1, g: 0.7, b: 0.3, a: 1}
+  wrongColor: {r: 1, g: 0.5, b: 0.5, a: 1}
+  showSelection: 1
+  selectedTint: {r: 1, g: 0.95, b: 0.6, a: 1}
+  selectedTintStrength: 0.3
 --- !u!1 &1617367902
 GameObject:
   m_ObjectHideFlags: 0
@@ -998,6 +1013,7 @@ MonoBehaviour:
   OnRoundClearedForRestart:
     m_PersistentCalls:
       m_Calls: []
+  manualPlacement: 1
 --- !u!1 &2011593647
 GameObject:
   m_ObjectHideFlags: 0
