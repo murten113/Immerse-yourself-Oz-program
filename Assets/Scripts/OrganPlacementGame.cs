@@ -30,6 +30,14 @@ public static class OrganHelpers
     }
 }
 
+[Serializable]
+public class OrganVisualPair
+{
+    public OrganId id;
+    public Sprite sprite;                        // optional static image
+    public RuntimeAnimatorController animation;  // optional looping animation
+}
+
 public class OrganPlacementGame : MonoBehaviour
 {
     [Header("Slots (fixed family per slot)")]
@@ -42,17 +50,20 @@ public class OrganPlacementGame : MonoBehaviour
     public OrganId correctLungs = OrganId.Lungs1;
     public OrganId correctBrain = OrganId.Brain1;
 
-    [Header("Sprites (map each OrganId to a sprite)")]
-    public List<OrganSpritePair> organSprites = new List<OrganSpritePair>();
+    [Header("Visuals (Sprite or Animation per organ)")]
+    public List<OrganVisualPair> organVisuals = new List<OrganVisualPair>();
 
-    [Header("Audio (optional)")]
+    [Header("Audio")]
+    public AudioSource audioSourceHRMDeath;
     public AudioSource audioSourceHeart;
     public AudioSource audioSourceLungs;
     public AudioSource audioSourceBrain;
-    public AudioClip sfxFailure;
-    public AudioClip sfxSuccess;
+    public AudioClip[] organAudioClips;
+    public AudioClip heart_lungs_loop;
+    public AudioClip brain_loop;
 
     [Header("Round flow")]
+    [Tooltip("Seconds to wait after reaction before resetting on failure/success when enabled.")]
     public float reactionDuration = 1.5f;
     public bool resetOnFailure = true;
     public bool resetOnSuccess = false;
@@ -64,27 +75,24 @@ public class OrganPlacementGame : MonoBehaviour
     public UnityEvent OnRoundClearedForRestart;
 
     [Header("Placement Controls")]
+    [Tooltip("Manual placement: select cavity with A/B/C, then press 1–9 to place there.")]
     public bool manualPlacement = true;
 
+    // Input and lookups
     private readonly Dictionary<KeyCode, OrganId> keyToOrgan = new Dictionary<KeyCode, OrganId>();
-    private readonly Dictionary<OrganId, Sprite> idToSprite = new Dictionary<OrganId, Sprite>();
+    private readonly Dictionary<OrganId, OrganVisualPair> idToVisual = new Dictionary<OrganId, OrganVisualPair>();
 
+    // What’s currently inside each visible slot (may be wrong place)
     private OrganId? inHeartSlot;
     private OrganId? inLungsSlot;
     private OrganId? inBrainSlot;
 
+    // Selected slot for manual placement
     private CavitySlot selectedSlot;
-
-    [Serializable]
-    public class OrganSpritePair
-    {
-        public OrganId id;
-        public Sprite sprite;
-    }
 
     void Awake()
     {
-        // key to organ map
+        // key → organ map
         keyToOrgan[KeyCode.Alpha1] = OrganId.Heart1;
         keyToOrgan[KeyCode.Alpha2] = OrganId.Heart2;
         keyToOrgan[KeyCode.Alpha3] = OrganId.Heart3;
@@ -95,20 +103,24 @@ public class OrganPlacementGame : MonoBehaviour
         keyToOrgan[KeyCode.Alpha8] = OrganId.Brain2;
         keyToOrgan[KeyCode.Alpha9] = OrganId.Brain3;
 
-        idToSprite.Clear();
-        foreach (var p in organSprites)
-            if (p != null && p.sprite != null && !idToSprite.ContainsKey(p.id))
-                idToSprite.Add(p.id, p.sprite);
+        // visuals lookup
+        idToVisual.Clear();
+        foreach (var v in organVisuals)
+        {
+            if (v != null && !idToVisual.ContainsKey(v.id))
+                idToVisual.Add(v.id, v);
+        }
 
         ClearAll();
-        selectedSlot = heartSlot;
+        selectedSlot = heartSlot; // default selection for manual mode
         HighlightSelection();
 
-        Debug.Log("Game ready. Use A/B/C to select cavity, 1–9 to place organs, Space to pull lever.");
+        Debug.Log("Game ready. A/B/C select cavity, 1–9 place organ (sprite/animation), Space pulls the lever.");
     }
 
     void Update()
     {
+        // Select cavity (manual mode)
         if (manualPlacement)
         {
             if (Input.GetKeyDown(KeyCode.A)) { selectedSlot = heartSlot; Debug.Log("Selected cavity: HEART"); HighlightSelection(); }
@@ -116,6 +128,7 @@ public class OrganPlacementGame : MonoBehaviour
             if (Input.GetKeyDown(KeyCode.C)) { selectedSlot = brainSlot; Debug.Log("Selected cavity: BRAIN"); HighlightSelection(); }
         }
 
+        // Place organ
         foreach (var kv in keyToOrgan)
         {
             if (Input.GetKeyDown(kv.Key))
@@ -125,6 +138,13 @@ public class OrganPlacementGame : MonoBehaviour
             }
         }
 
+        // Remove oran
+        if(Input.GetKeyDown(KeyCode.Backspace))
+        {
+            selectedSlot.Clear();
+        }
+
+        // Lever
         if (Input.GetKeyDown(KeyCode.Space))
             PullLever();
     }
@@ -138,8 +158,7 @@ public class OrganPlacementGame : MonoBehaviour
 
     private void PlaceOrgan(OrganId organ)
     {
-        var fam = OrganHelpers.GetFamily(organ);
-        Sprite spr = idToSprite.TryGetValue(organ, out var s) ? s : null;
+        OrganVisualPair visual = idToVisual.TryGetValue(organ, out var v) ? v : null;
 
         if (manualPlacement && selectedSlot != null)
         {
@@ -147,16 +166,38 @@ public class OrganPlacementGame : MonoBehaviour
             else if (selectedSlot == lungsSlot) inLungsSlot = organ;
             else if (selectedSlot == brainSlot) inBrainSlot = organ;
 
-            selectedSlot.SetOrganSprite(spr);
-            Debug.Log($"Placed {organ} ({fam}) in {selectedSlot.slotFamily} slot.");
+            selectedSlot.SetOrganSprite(visual?.sprite);
+            selectedSlot.SetOrganAnimation(visual?.animation);
+            Debug.Log($"Placed {organ} ({OrganHelpers.GetFamily(organ)}) in {selectedSlot.slotFamily} slot.");
         }
         else
         {
-            if (fam == OrganFamily.Heart) { inHeartSlot = organ; heartSlot.SetOrganSprite(spr); Debug.Log($"Auto-placed {organ} in HEART slot."); }
-            else if (fam == OrganFamily.Lungs) { inLungsSlot = organ; lungsSlot.SetOrganSprite(spr); Debug.Log($"Auto-placed {organ} in LUNGS slot."); }
-            else { inBrainSlot = organ; brainSlot.SetOrganSprite(spr); Debug.Log($"Auto-placed {organ} in BRAIN slot."); }
+            // Auto-snap by family
+            var fam = OrganHelpers.GetFamily(organ);
+            if (fam == OrganFamily.Heart)
+            {
+                inHeartSlot = organ;
+                heartSlot.SetOrganSprite(visual?.sprite);
+                heartSlot.SetOrganAnimation(visual?.animation);
+                Debug.Log($"Auto-placed {organ} in HEART slot.");
+            }
+            else if (fam == OrganFamily.Lungs)
+            {
+                inLungsSlot = organ;
+                lungsSlot.SetOrganSprite(visual?.sprite);
+                lungsSlot.SetOrganAnimation(visual?.animation);
+                Debug.Log($"Auto-placed {organ} in LUNGS slot.");
+            }
+            else
+            {
+                inBrainSlot = organ;
+                brainSlot.SetOrganSprite(visual?.sprite);
+                brainSlot.SetOrganAnimation(visual?.animation);
+                Debug.Log($"Auto-placed {organ} in BRAIN slot.");
+            }
         }
 
+        // Reset visual state to neutral whenever a placement changes
         heartSlot.SetState(SlotState.Neutral);
         lungsSlot.SetState(SlotState.Neutral);
         brainSlot.SetState(SlotState.Neutral);
@@ -165,59 +206,102 @@ public class OrganPlacementGame : MonoBehaviour
 
     private void EvaluateAndReact()
     {
-        bool heartOk = EvaluateSlot(inHeartSlot, OrganFamily.Heart, correctHeart, heartSlot);
-        bool lungsOk = EvaluateSlot(inLungsSlot, OrganFamily.Lungs, correctLungs, lungsSlot);
-        bool brainOk = EvaluateSlot(inBrainSlot, OrganFamily.Brain, correctBrain, brainSlot);
+        SlotState heartState = EvaluateSlot(inHeartSlot, OrganFamily.Heart, correctHeart, heartSlot);
+        SlotState lungsState = EvaluateSlot(inLungsSlot, OrganFamily.Lungs, correctLungs, lungsSlot);
+        SlotState brainState = EvaluateSlot(inBrainSlot, OrganFamily.Brain, correctBrain, brainSlot);
 
-        bool allOk = heartOk && lungsOk && brainOk;
+        bool allOk = heartState == SlotState.Correct && lungsState == SlotState.Correct && brainState == SlotState.Correct;
+        bool allEmpty = heartState == SlotState.Empty && lungsState == SlotState.Empty && brainState == SlotState.Empty;
 
-        if (allOk)
+        // if (allOk)
+        // {
+        //     Debug.Log("All organs correct → Animal LIVES.");
+        //     OnRoundSuccess?.Invoke();
+        //     PlayOneShot(sfxSuccess);
+        //     if (resetOnSuccess) StartCoroutine(RestartAfterDelay(reactionDuration));
+        // }
+        // else
+        // {
+        //     Debug.Log("One or more organs wrong → Animal DIES.");
+        //     OnRoundFailure?.Invoke();
+        //     PlayOneShot(sfxFailure);
+        //     if (resetOnFailure) StartCoroutine(RestartAfterDelay(reactionDuration));
+        // }
+
+        if (allOk) // if only the correct organs are supplied
         {
-            // Debug.Log("All organs correct → Animal LIVES.");
-            // OnRoundSuccess?.Invoke();
-            // PlayOneShot(sfxSuccess);
-            // if (resetOnSuccess) StartCoroutine(RestartAfterDelay(reactionDuration));
+            PlayOneShot(audioSourceHeart, heart_lungs_loop);
+            PlayOneShot(audioSourceHeart, brain_loop);
         }
-        else
+        else if (allEmpty) // no organs at all
         {
-            Debug.Log("One or more organs wrong → Animal DIES.");
-            OnRoundFailure?.Invoke();
-            PlayOneShot(sfxFailure);
-            if (resetOnFailure) StartCoroutine(RestartAfterDelay(reactionDuration));
+            if (resetOnSuccess) StartCoroutine(RestartAfterDelay(2));
+        }
+        else // all other scenarios (wrong organs)
+        {
+            OrganId[] organsInSlots = new OrganId[]
+            {
+                inHeartSlot ?? default,
+                inLungsSlot ?? default,
+                inBrainSlot ?? default
+            };
+            
+            foreach (OrganId organId in organsInSlots)
+            {
+                AudioSource audioSource = null;
+                if ((int)organId >= 1 && (int)organId <= 3)
+                    audioSource = audioSourceHeart;
+                else if ((int)organId >= 4 && (int)organId <= 6)
+                    audioSource = audioSourceLungs;
+                else if ((int)organId >= 7)
+                    audioSource = audioSourceBrain;
+    
+                PlayOneShot(audioSource, organAudioClips[(int)organId]);
+            }
+            
+            audioSourceHRMDeath.Play();
+            StartCoroutine(StopAfterDelay(15));
         }
     }
 
-    private bool EvaluateSlot(OrganId? placed, OrganFamily thisSlotFamily, OrganId correctId, CavitySlot slot)
+    private SlotState EvaluateSlot(OrganId? placed, OrganFamily thisSlotFamily, OrganId correctId, CavitySlot slot)
     {
+        print(placed + ", " + correctId + ", " + slot);
         string slotName = thisSlotFamily.ToString().ToUpper();
 
         if (!placed.HasValue)
         {
             Debug.Log($"{slotName} slot is EMPTY → RED");
-            slot.SetState(SlotState.Wrong);
-            return false;
+            slot.SetState(SlotState.Empty);
+            return SlotState.Empty;
         }
 
-        OrganFamily placedFam = OrganHelpers.GetFamily(placed.Value);
-        OrganFamily correctFam = OrganHelpers.GetFamily(correctId);
+        // OrganFamily placedFam = OrganHelpers.GetFamily(placed.Value);
+        // OrganFamily correctFam = OrganHelpers.GetFamily(correctId); // equals this slot family by design
 
-        if (placedFam != correctFam)
-        {
-            Debug.Log($"{slotName} slot has {placed.Value} → ORANGE (correct organ type, wrong slot)");
-            slot.SetState(SlotState.WrongPlace);
-            return false;
-        }
+        // if (placedFam != correctFam)
+        // {
+        //     // // Right family but wrong cavity → orange
+        //     // Debug.Log($"{slotName} slot has {placed.Value} → ORANGE (correct family, wrong slot)");
+        //     // slot.SetState(SlotState.WrongPlace);
+        //     // return SlotState.Wrong;
 
-        if (placed.Value == correctId)
+        //     // // Right family but wrong cavity → orange
+        //     // Debug.Log($"OVERRIDING for game simplicity. Correct organ. Old: {slotName} slot has {placed.Value} → ORANGE (correct family, wrong slot)");
+        //     // slot.SetState(SlotState.Correct);
+        //     // return SlotState.Correct;
+        // }
+    
+        if (placed.Value == correctHeart || placed.Value == correctLungs || placed.Value == correctBrain)
         {
             Debug.Log($"{slotName} slot has {placed.Value} → GREEN (correct)");
             slot.SetState(SlotState.Correct);
-            return true;
+            return SlotState.Correct;
         }
 
         Debug.Log($"{slotName} slot has {placed.Value} → RED (wrong variant)");
         slot.SetState(SlotState.Wrong);
-        return false;
+        return SlotState.Wrong;
     }
 
     private System.Collections.IEnumerator RestartAfterDelay(float seconds)
@@ -226,6 +310,15 @@ public class OrganPlacementGame : MonoBehaviour
         ClearAll();
         Debug.Log("=== Round reset ===");
         OnRoundClearedForRestart?.Invoke();
+    }
+
+    private System.Collections.IEnumerator StopAfterDelay(float seconds)
+    {
+        if (seconds > 0f) yield return new WaitForSeconds(seconds);
+        Debug.Log("Stopped creature animation");
+        heartSlot.ClearIfEmpty();
+        lungsSlot.ClearIfEmpty();
+        brainSlot.ClearIfEmpty();
     }
 
     private void ClearAll()
