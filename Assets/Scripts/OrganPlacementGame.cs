@@ -58,9 +58,12 @@ public class OrganPlacementGame : MonoBehaviour
     public AudioSource audioSourceHeart;
     public AudioSource audioSourceLungs;
     public AudioSource audioSourceBrain;
+    public AudioSource audioSourceHeartLoop;
+    public AudioSource audioSourceBrainLoop;
     public AudioClip[] organAudioClips;
     public AudioClip heart_lungs_loop;
     public AudioClip brain_loop;
+    public AudioClip death_sound;
 
     [Header("Round flow")]
     [Tooltip("Seconds to wait after reaction before resetting on failure/success when enabled.")]
@@ -139,9 +142,15 @@ public class OrganPlacementGame : MonoBehaviour
         }
 
         // Remove oran
-        if(Input.GetKeyDown(KeyCode.Backspace))
+        if (Input.GetKeyDown(KeyCode.Backspace))
         {
             selectedSlot.Clear();
+        }
+        
+        // Final Kill
+        if(Input.GetKeyDown(KeyCode.K))
+        {
+            KillCreature();
         }
 
         // Lever
@@ -230,8 +239,8 @@ public class OrganPlacementGame : MonoBehaviour
 
         if (allOk) // if only the correct organs are supplied
         {
-            PlayOneShot(audioSourceHeart, heart_lungs_loop);
-            PlayOneShot(audioSourceHeart, brain_loop);
+            PlayOneShot(audioSourceHeartLoop, heart_lungs_loop);
+            PlayOneShot(audioSourceBrainLoop, brain_loop);
         }
         else if (allEmpty) // no organs at all
         {
@@ -319,6 +328,13 @@ public class OrganPlacementGame : MonoBehaviour
         heartSlot.ClearIfEmpty();
         lungsSlot.ClearIfEmpty();
         brainSlot.ClearIfEmpty();
+    }
+
+    private void KillCreature()
+    {
+        audioSourceBrainLoop.Stop();
+        audioSourceHeartLoop.Stop();
+        PlayOneShot(audioSourceHeart,death_sound);
     }
 
     private void ClearAll()
