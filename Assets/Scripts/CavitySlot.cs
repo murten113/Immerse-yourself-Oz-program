@@ -1,7 +1,7 @@
 using UnityEngine;
 using UnityEngine.UI;
 
-public enum SlotState { Neutral, Correct, WrongPlace, Wrong }
+public enum SlotState { Neutral, Correct, WrongPlace, Wrong, Empty }
 
 [RequireComponent(typeof(Image))]
 public class CavitySlot : MonoBehaviour
@@ -89,6 +89,14 @@ public class CavitySlot : MonoBehaviour
         ApplyColors();
     }
 
+    public void ClearIfEmpty()
+    {
+        if(state == SlotState.Empty)
+        {
+            Clear();
+        }
+    }
+
     public void Clear()
     {
         StopAnimation();
@@ -108,6 +116,7 @@ public class CavitySlot : MonoBehaviour
         switch (state)
         {
             case SlotState.Correct: baseColor = correctColor; break;
+            case SlotState.Empty: baseColor = wrongColor; break;
             case SlotState.WrongPlace: baseColor = wrongPlaceColor; break;
             case SlotState.Wrong: baseColor = wrongColor; break;
         }
